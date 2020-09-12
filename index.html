@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>TODO List</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="style.css">
+	<link href="https://fonts.googleapis.com/css?family=Hind&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Lemonada:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./fonts/css/fontawesome.min.css">
+	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<h1>TODO List</h1>
+		<div class="addTask">
+			<input type="text" placeholder="Add a Task" class="input">
+			<button class="add">Add</button>
+		</div>
+
+		<ol class="notCompleted">
+			<h4>Not Completed</h4>
+		</ol>
+
+		<ol class="Completed">
+			<h4>Completed</h4>
+		</ol>
+	</div>
+
+	
+	<script>
+		const container = document.querySelector('.notCompleted');
+		var inputValue = document.querySelector('.input');
+		const btn = document.querySelector('.addTask > button');
+		const add = document.querySelector('.add');
+
+		if(window.localStorage.getItem("todos") == undefined){
+			var todos = [];
+			window.localStorage.setItem("todos", JSON.stringify(todos));
+		}
+
+		var todosEX = window.localStorage.getItem("todos");
+		var todos = JSON.parse(todosEX);
+
+
+		class item{
+			constructor(name){
+				this.createItem(name);
+			}
+			createItem(name){
+				const notCompleted = document.querySelector('.notCompleted');
+				const Completed = document.querySelector('.Completed');
+
+				var itemBox = document.createElement('li');
+				itemBox.classList.add('item');
+
+				var input = document.createElement('input');
+				input.type = "text";
+				input.disabled = true;
+				input.value = name;
+				input.classList.add('item_input');
+
+				var edit = document.createElement('button');
+				edit.classList.add('edit');
+				edit.innerHTML = '<i class="fa fa-pencil"></i>';
+				edit.addEventListener('click', () => this.edit(input, name));
+
+				var remove = document.createElement('button');
+				remove.classList.add('remove');
+				remove.innerHTML = '<i class="fa fa-trash"></i>';
+				remove.addEventListener('click', () => this.remove(itemBox, name));
+
+				var checki = document.createElement('button');
+				checki.classList.add('checki');
+				checki.innerHTML = '<i class="fa fa-check"></i>' ;
+				checki.addEventListener('click', function(){
+					const parent = this.parentNode;
+					parent.remove();
+					Completed.appendChild(parent);
+					checki.style.display = 'none';
+				})
+				
+				container.appendChild(itemBox);
+
+				itemBox.appendChild(input);
+				itemBox.appendChild(edit);
+				itemBox.appendChild(remove);
+				itemBox.appendChild(checki);
+			}
+
+			edit(input, name){
+				
+				if(input.disabled == true){
+				input.disabled = !input.disabled;
+				}
+				else{
+					input.disabled = !input.disabled;
+					let indexof = todos.indexOf(name);
+					todos[indexof] = input.value;
+					window.localStorage.setItem("todos", JSON.stringify(todos));
+				}
+			}
+
+			remove(itemBox, name){
+				itemBox.parentNode.removeChild(itemBox);
+				let index = todos.indexOf(name);
+				todos.splice(index, 1);
+				window.localStorage.setItem("todos", JSON.stringify(todos));
+			}
+
+		}
+
+		add.addEventListener('click', check);
+		window.addEventListener('keydown', (e) => {
+			if(e.which == 13){
+				check();
+			}
+		})
+
+		function check(){
+			if(inputValue.value != ""){
+				new item(inputValue.value);
+				todos.push(inputValue.value);
+				window.localStorage.setItem("todos", JSON.stringify(todos));
+				inputValue.value = "";
+			}
+		}
+
+
+		for (var v = 0 ; v < todos.length ; v++){
+			new item(todos[v]);
+		}
+
+
+		new item("default task");
+	</script>
+</body>
+</html>
